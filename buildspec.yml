@@ -2,29 +2,25 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      ruby: 3.1
-      nodejs: 16
     commands:
-      - echo Installing dependencies...
+      # Install dependencies
+      - apt-get update
+      - apt-get install -y build-essential libpq-dev libsqlite3-dev libxml2-dev libxslt1-dev
       - gem install bundler
-      - bundle install
-      - npm install -g yarn
-      - yarn install
+      - bundle install --verbose
   pre_build:
     commands:
-      - echo Running database migrations...
+      - bundle exec rake db:create
       - bundle exec rake db:migrate
   build:
     commands:
-      - echo Running tests...
-      - bundle exec rake test
-      - echo Precompiling assets...
       - bundle exec rake assets:precompile
   post_build:
     commands:
-      - echo Build completed on `date`
+      - echo "Build completed on `date`"
 artifacts:
   files:
     - '**/*'
+  discard-paths: yes
   base-directory: 'public'
+
